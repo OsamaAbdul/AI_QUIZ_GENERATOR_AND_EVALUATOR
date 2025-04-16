@@ -83,7 +83,7 @@ OPENAI_KEY=your_openai_api_key
 Start the server:
 
 ```bash
-npm start
+nodemon server.js
 ```
 
 ---
@@ -104,7 +104,7 @@ REACT_APP_API_URL=http://localhost:5000
 Start the frontend:
 
 ```bash
-npm start
+npm run dev
 ```
 
 ---
