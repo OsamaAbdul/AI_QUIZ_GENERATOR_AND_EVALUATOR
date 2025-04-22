@@ -75,6 +75,7 @@ const TakeQuiz = () => {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
       <div className="bg-white p-6 rounded-2xl shadow-2xl max-w-lg w-full transform transition-all duration-500">
+      {selected && <Explanation text={current.explanation} />}
         <QuizHeader index={index} total={quiz.length} timeLeft={timeLeft} />
         <ProgressBar index={index} total={quiz.length} />
         <QuizCard
@@ -84,7 +85,7 @@ const TakeQuiz = () => {
           correctAnswer={current.correctAnswer}
           onAnswer={handleAnswer}
         />
-        {selected && <Explanation text={current.explanation} />}
+        
         <Controls
           index={index}
           total={quiz.length}
