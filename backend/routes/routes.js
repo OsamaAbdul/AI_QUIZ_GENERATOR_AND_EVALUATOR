@@ -1,5 +1,5 @@
 import express from 'express';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import OpenAI from 'openai';
 import dotenv from 'dotenv';
 import { register, login } from '../controllers/UserController.js';
 
@@ -7,68 +7,133 @@ dotenv.config();
 
 const router = express.Router();
 
-// Routes for login and register
+// Auth routes
 router.post('/login', login);
 router.post('/register', register);
 
-// Initialize Google Generative AI with your API key
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+// Fireworks AI client
+const openai = new OpenAI({
+  baseURL: 'https://models.aixplain.com/api/v1/',
+  apiKey: process.env.FIREWORKS_API_KEY,
+});
 
-// Quiz Route
+// PDF-to-MCQ route
 router.post('/pdf-to-mcq', async (req, res) => {
   try {
-    const { text } = req.body; // Extracted text from the frontend
+    const { text, quizCount, userPrompt } = req.body;
+   
+    
 
-    // Validate input
-    if (!text) {
-      return res.status(400).json({ success: false, message: 'Text is required' });
+    if (!text || typeof text !== 'string' || text.trim().length === 0) {
+      return res.status(400).json({ success: false, message: 'Valid text content is required' });
     }
 
-    // Get the Gemini model
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
-
-    // Generate the prompt for Gemini
     const prompt = `
-      Based on the content below, generate up to 30 multiple-choice questions in the following JSON format:
-      [
-        {
-          "question": "Sample Question?",
-          "options": ["A", "B", "C", "D"],
-          "correctAnswer": "A",
-          "explanation": "State that 'Option A' is the correct answer and explain why it is correct, directly referencing the relevant part of the content. "
-        },
-        ...
-      ]
-      Ensure the output is valid JSON. If the content is insufficient, generate as many questions as possible.
-      Content:
-      ${text}
-    `;
+            You are an expert educational content generator.
 
-    // Send the request to Gemini
-    const result = await model.generateContent(prompt);
-    const responseText = await result.response.text();
+            Using this ${userPrompt} to Generate up to ${quizCount} multiple-choice questions (MCQs) based on the input text below. Output only a **valid JSON array**, no markdown or commentary.
 
-    // Parse the response as JSON
+            Each MCQ must follow this format:
+            {
+              "question": "...",
+              "options": ["A: ...", "B: ...", "C: ...", "D: ..."],
+              "correctAnswer": "A",
+              "correctAnswerText": "...",
+              "explanation": "..."
+            }
+
+            Rules:
+            1. The correctAnswer must be the letter ("A", "B", "C", or "D") that matches the correct option label.
+            2. The correctAnswerText must be the text portion **after the label** of the correct option.
+            3. Explanations must justify the correct answer and debunk the incorrect ones.
+            4. All questions must be self-contained, unambiguous, and derived from the content.
+
+            Input Text:
+${text.trim()}
+`;
+
+    const messages = [
+      {
+        role: 'system',
+        content: 'You are an MCQ generator that returns clean, accurate JSON with matching answer labels and values.',
+      },
+      {
+        role: 'user',
+        content: prompt,
+      },
+    ];
+
+    let responseText;
+    for (let attempt = 1; attempt <= 3; attempt++) {
+      try {
+        const completion = await openai.chat.completions.create({
+          model: '671932146eb5638ce20300a1',
+          messages,
+          temperature: 0.5,
+          max_tokens: 8192,
+        });
+
+        responseText = completion.choices[0].message.content;
+        break;
+      } catch (error) {
+        if (attempt === 3) {
+          console.error('OpenAI failed after 3 attempts:', error);
+          return res.status(500).json({ success: false, message: 'Failed to generate quiz' });
+        }
+        await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
+      }
+    }
+
     let quizJSON;
     try {
-      // Gemini may wrap JSON in markdown code blocks (```json ... ```), so clean it
-      const cleanedResponse = responseText.replace(/```json\n|```/g, '').trim();
+      const cleanedResponse = responseText
+        .replace(/```(?:json)?\n?([\s\S]*?)\n?```/g, '$1')
+        .replace(/^[^\[{]*?([\[{].*[\]}])[^}\]]*?$/s, '$1')
+        .trim();
+
       quizJSON = JSON.parse(cleanedResponse);
     } catch (error) {
-      console.error('Failed to parse JSON response:', error, 'Response:', responseText);
-      return res.status(500).json({ success: false, message: 'Failed to parse quiz response' });
+      console.error('Failed to parse quiz JSON:', error, '\nPartial response:', responseText.slice(0, 500));
+      return res.status(500).json({ success: false, message: 'Invalid quiz response format' });
     }
 
-    // Validate the parsed JSON
-    if (!Array.isArray(quizJSON)) {
-      return res.status(500).json({ success: false, message: 'Quiz response is not an array' });
+    // Validate and enrich
+    const validOptions = ['A', 'B', 'C', 'D'];
+    quizJSON = Array.isArray(quizJSON)
+      ? quizJSON
+          .filter((q, i) => {
+            const isValid =
+              q &&
+              typeof q.question === 'string' &&
+              q.question.trim() &&
+              Array.isArray(q.options) &&
+              q.options.length === 4 &&
+              q.options.every(opt => typeof opt === 'string' && /^[ABCD]:\s/.test(opt)) &&
+              typeof q.correctAnswer === 'string' &&
+              validOptions.includes(q.correctAnswer) &&
+              typeof q.explanation === 'string' &&
+              q.explanation.trim();
+
+            const correctOption = q.options.find(opt => opt.startsWith(`${q.correctAnswer}:`));
+            if (!correctOption) {
+              console.warn(`Mismatch at index ${i}: No matching correct option for letter ${q.correctAnswer}`);
+              return false;
+            }
+
+            // Add correctAnswerText field
+            q.correctAnswerText = correctOption.split(':').slice(1).join(':').trim();
+            return isValid;
+          })
+      : [];
+
+    if (quizJSON.length === 0) {
+      return res.status(500).json({ success: false, message: 'No valid questions generated' });
     }
 
-    // Send the generated quiz as JSON response
-    res.json({ success: true, quiz: quizJSON });
+    return res.json({ success: true, quiz: quizJSON });
   } catch (error) {
-    console.error('Error generating quiz:', error);
-    res.status(500).json({ success: false, message: 'Failed to generate quiz' });
+    console.error('Unexpected error:', error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
   }
 });
 

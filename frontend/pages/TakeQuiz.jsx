@@ -1,6 +1,6 @@
 // src/components/TakeQuiz.jsx
 import React, { useEffect, useState } from 'react';
-import QuizHeader from '../src/components/QuizHeader.jsx'
+import QuizHeader from '../src/components/QuizHeader.jsx';
 import ProgressBar from '../src/components/ProgressBar.jsx';
 import QuizCard from '../src/components/QuizCard.jsx';
 import Explanation from '../src/components/Explanation.jsx';
@@ -30,14 +30,21 @@ const TakeQuiz = () => {
 
   const handleSubmit = () => {
     if (selected) {
-      if (selected === quiz[index].correctAnswer) {
-        setScore(score + 1);
+      // Compare by clean text: strip "A: ..." label and compare to correctAnswerText
+      const extractText = (opt) => opt?.split(':').slice(1).join(':').trim().toLowerCase();
+      const selectedText = extractText(selected);
+      const correctText = quiz[index].correctAnswerText?.toLowerCase();
+
+      if (selectedText === correctText) {
+        setScore((prev) => prev + 1);
       }
+
       if (index + 1 < quiz.length) {
         setIndex(index + 1);
         setSelected(null);
         resetTimer();
       } else {
+        clearTimer();
         setShowResult(true);
       }
     }
@@ -75,17 +82,18 @@ const TakeQuiz = () => {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
       <div className="bg-white p-6 rounded-2xl shadow-2xl max-w-lg w-full transform transition-all duration-500">
-      {selected && <Explanation text={current.explanation} />}
+        {selected && <Explanation text={current.explanation} />}
         <QuizHeader index={index} total={quiz.length} timeLeft={timeLeft} />
         <ProgressBar index={index} total={quiz.length} />
+
         <QuizCard
           question={current.question}
           options={current.options}
           selected={selected}
-          correctAnswer={current.correctAnswer}
+          correctAnswerText={current.correctAnswerText}
           onAnswer={handleAnswer}
         />
-        
+
         <Controls
           index={index}
           total={quiz.length}

@@ -14,7 +14,7 @@ function App() {
     <Routes>
       <Route path="/" element={<Login />} />
       <Route path="/register" element={<Register />} />
-      <Route path="/take-quiz" element={<TakeQuiz />} />
+      <Route path="/take-quiz" element={<PrivateRoute><TakeQuiz /></PrivateRoute>} />
       <Route path="/upload-pdf" element={<PrivateRoute><Quiz /></PrivateRoute>} />
     </Routes>
    </BrowserRouter>
