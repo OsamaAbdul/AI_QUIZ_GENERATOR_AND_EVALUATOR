@@ -11,13 +11,22 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Allowing CORS from the backend
-const corsOptions = {
-  origin: 'https://ai-quiz-generator-and-evaluator-t26o.vercel.app/',
-  Methods: ['GET', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  Credentials: true, // if need arises to send cookies
-};
+// Configure CORS to allow specific origins
+const allowedOrigins = [
+  'https://ai-quiz-app.netlify.app',
+  'https://ai-quiz-generator-and-evaluator-t26o.vercel.app',
+];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true, // If your API requires credentials (e.g., cookies)
+}));
 
 // Middleware
 app.use(cors(corsOptions)); //configure cors options
