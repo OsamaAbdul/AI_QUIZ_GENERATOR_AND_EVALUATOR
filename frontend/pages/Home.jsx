@@ -42,7 +42,7 @@ function Home() {
       >
         <div className="max-w-4xl text-center">
           <h1 className="text-4xl md:text-6xl font-extrabold mb-6">
-            Welcome to AI Quiz Generator & Evaluator
+            Welcome to AI Quiz Generator & Evaluator For Students
           </h1>
           <p className="text-lg md:text-xl mb-8">
             Transform learning into an interactive and personalized experience — powered by state-of-the-art AI APIs. Upload your PDFs, auto-generate quizzes, evaluate answers in real-time, and get smarter feedback instantly.
