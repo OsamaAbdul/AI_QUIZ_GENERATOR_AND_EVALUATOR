@@ -13,7 +13,7 @@ const PORT = process.env.PORT || 5000;
 
 // Allowing CORS from the backend
 const corsOptions = {
-  origin: 'https://ai-quiz-app.netlify.app',
+  origin: 'https://ai-quiz-generator-and-evaluator-t26o.vercel.app/',
   Methods: ['GET', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   Credentials: true, // if need arises to send cookies
