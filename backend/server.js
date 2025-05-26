@@ -3,40 +3,40 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import routes from './routes/routes.js';
 import dotenv from 'dotenv';
-import { Methods } from 'openai/resources/fine-tuning/methods.mjs';
-
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Configure CORS to allow specific origins
+// ✅ Define allowed origins without trailing slashes
 const allowedOrigins = [
   'https://ai-quiz-app.netlify.app',
   'https://ai-quiz-generator-and-evaluator-t26o.vercel.app',
 ];
 
-app.use(cors({
+// ✅ Define corsOptions
+const corsOptions = {
   origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps, curl, or postman)
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
     }
   },
-  credentials: true, // If your API requires credentials (e.g., cookies)
-}));
+  credentials: true,
+};
 
-// Middleware
-app.use(cors(corsOptions)); //configure cors options
+// ✅ Apply CORS once with the correct options
+app.use(cors(corsOptions));
+
+// ✅ Middleware
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
+app.use(express.static('public')); // Serve static files like uploaded PDFs
 
-// Serve static files like uploaded PDFs
-app.use(express.static('public'));
-
-// DB Connection
+// ✅ DB Connection
 mongoose.connect(process.env.MONGODB_URI)
   .then(() => {
     console.log("✅ Connected to MongoDB!");
@@ -45,10 +45,10 @@ mongoose.connect(process.env.MONGODB_URI)
     console.error("❌ MongoDB connection error:", error);
   });
 
-// Routes
+// ✅ Routes
 app.use('/api/user', routes);
 
-// Start server
+// ✅ Start server
 app.listen(PORT, () => {
   console.log(`🚀 Server is running at http://localhost:${PORT}`);
 });
