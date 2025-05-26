@@ -102,13 +102,14 @@ const PdfUpload = () => {
     setLoading(true);
 
     try {
+      const apiUrl = import.meta.env.VITE_API_URL;
       const text = await extractTextFromPDF(pdfFile);
       setExtractedText(text);
 
       const jsonData = { text, userPrompt, quizCount: parseInt(quizCount) || 5 };
       console.log("Extracted Text in JSON:", JSON.stringify(jsonData, null, 2));
 
-      const response = await fetch("http://localhost:5000/api/user/pdf-to-mcq", {
+      const response = await fetch(`${apiUrl}/api/user/pdf-to-mcq`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
