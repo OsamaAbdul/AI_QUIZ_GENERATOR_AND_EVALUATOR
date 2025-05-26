@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "canvas-confetti": "^1.9.3",
+    "dotenv": "^16.5.0",
     "flowbite": "^3.1.2",
     "framer-motion": "^12.10.5",
     "pdfjs-dist": "^3.4.120",
