@@ -2,18 +2,18 @@
 @tailwind components;
 @tailwind utilities;
 
-.animate-pulse {
-  animation: pulse 1s infinite;
+body {
+  @apply bg-darkBg text-white font-sans;
 }
 
-@keyframes pulse {
-  0% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.5;
-  }
-  100% {
-    opacity: 1;
-  }
+.gradient-bg {
+  background: linear-gradient(180deg, #1E1E2F 0%, #2A2A40 100%);
+}
+
+.btn-primary {
+  @apply bg-gradient-to-r from-primary to-secondary text-white px-4 py-2 rounded-full hover:from-secondary hover:to-primary transition-all text-sm md:text-base; /* Reduced padding and font size */
+}
+
+.feature-card {
+  @apply bg-gray-800/50 p-4 md:p-6 rounded-lg flex flex-col items-center text-center hover:scale-105 transition-all min-h-[200px] md:min-h-[240px];
 }

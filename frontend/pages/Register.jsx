@@ -1,31 +1,34 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { MdEmail } from 'react-icons/md';
+import { RiLockPasswordFill } from 'react-icons/ri';
+import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
+import { FaSpinner } from 'react-icons/fa';
+import { toast } from 'react-toastify';
 
 const Register = () => {
-  // State to store email and password
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false); // Added for password toggle
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
-  // Handle form submission
-  const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevent page reload on form submit
 
-    // Input validation (simple check for empty fields)
-    if (!email || !password) {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!email.trim() || !password.trim()) {
       setError('Please fill in both fields');
       return;
     }
 
-    // Clear any previous error messages
     setError('');
     setLoading(true);
 
     try {
       const apiUrl = import.meta.env.VITE_API_URL;
-      const response = await fetch(`${apiUrl}/api/user/register`, { 
+      const response = await fetch(`${apiUrl}/api/user/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -40,54 +43,25 @@ const Register = () => {
       setLoading(false);
 
       if (response.ok) {
-        // Registration successful
-        alert('Registration successful! You can now log in.');
-        navigate('/')
-        // You can redirect the user to login page or dashboard here
+        toast.success('Registration successful! You can now log in.');
+        navigate('/');
       } else {
-        // Registration failed
         setError(result.error || 'Something went wrong');
       }
     } catch (err) {
       setLoading(false);
-      setError('Network error, please try again');
+      toast.error('Network error, please try again');
     }
   };
 
   return (
-    <div className='wrapper'>
+    <div className="wrapper">
       <form className="form_container" onSubmit={handleSubmit}>
-        <div className="logo_container"></div>
         <div className="title_container">
           <p className="title">Sign Up for your Account</p>
           <span className="subtitle">
             Get started with our app, just create an account and enjoy the experience.
           </span>
-        </div>
-        <br />
-
-        <div className="input_container">
-          <label className="input_label" htmlFor="email_field">Email</label>
-          <input
-            placeholder="name@mail.com"
-            type="email"
-            className="input_field"
-            id="email_field"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)} // Update email state
-          />
-        </div>
-
-        <div className="input_container">
-          <label className="input_label" htmlFor="password_field">Password</label>
-          <input
-            placeholder="Password"
-            type="password"
-            className="input_field"
-            id="password_field"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)} // Update password state
-          />
         </div>
 
         {error && (
@@ -96,31 +70,148 @@ const Register = () => {
           </p>
         )}
 
-        <button
-          type="submit"
-          className="sign-in_btn"
-          disabled={loading} // Disable button while loading
-        >
-          <span>{loading ? 'Signing up...' : 'Sign Up'}</span>
+        <div className="input_container icon_input">
+          <label className="input_label" htmlFor="email_field">Email</label>
+          <div className="input_with_icon">
+            <MdEmail className="input_icon" />
+            <input
+              type="email"
+              id="email_field"
+              placeholder="osamaabdul@mail.com"
+              className="input_field"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
+        </div>
+
+        <div className="input_container icon_input">
+          <label className="input_label" htmlFor="password_field">Password</label>
+          <div className="input_with_icon">
+            <RiLockPasswordFill className="input_icon" />
+            <input
+              type={showPassword ? 'text' : 'password'}
+              id="password_field"
+              placeholder="••••••••"
+              className="input_field"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+            <span
+              className="toggle_eye"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
+            </span>
+          </div>
+        </div>
+
+        <button type="submit" className="sign-in_btn" disabled={loading}>
+          <center>
+            {loading ? <FaSpinner className="spinner" /> : 'Sign Up'}
+          </center>
         </button>
 
-        {/* <div className="separator">
-          <hr className="line" />
-          <span>Or</span>
-          <hr className="line" />
-        </div> */}
-
-        {/* Google and Apple sign-in buttons go here */}
-
-        <p>Already have an accoount?</p>
+        <p>Already have an account?</p>
         <button
           type="button"
           className="sign-in_btn secondary_btn"
           onClick={() => navigate('/')}
         >
-          Login In
+          Log In
         </button>
       </form>
+
+      <style>{`
+        .spinner {
+          animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+        .wrapper {
+          min-height: 100vh;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          padding: 20px;
+        }
+        .form_container {
+          width: 100%;
+          max-width: 400px;
+          background: white;
+          padding: 30px;
+          border-radius: 10px;
+          box-shadow: 0 0 20px rgba(0,0,0,0.05);
+        }
+        .title_container {
+          text-align: center;
+          margin-bottom: 20px;
+        }
+        .title {
+          font-size: 1.5rem;
+          font-weight: bold;
+        }
+        .subtitle {
+          font-size: 0.9rem;
+          color: #777;
+        }
+        .input_container {
+          margin-bottom: 15px;
+        }
+        .input_label {
+          font-size: 0.9rem;
+          display: block;
+          margin-bottom: 5px;
+        }
+        .input_with_icon {
+          position: relative;
+        }
+        .input_icon {
+          position: absolute;
+          top: 50%;
+          left: 10px;
+          transform: translateY(-50%);
+          color: #555;
+        }
+        .toggle_eye {
+          position: absolute;
+          top: 50%;
+          right: 10px;
+          transform: translateY(-50%);
+          cursor: pointer;
+          color: #555;
+        }
+        .input_field {
+          width: 100%;
+          padding: 10px 35px 10px 35px;
+          border: 1px solid #ccc;
+          border-radius: 6px;
+          outline: none;
+          color: black;
+        }
+        .sign-in_btn {
+          width: 100%;
+          padding: 12px;
+          background-color: #4a90e2;
+          color: white;
+          font-weight: bold;
+          border: none;
+          border-radius: 6px;
+          cursor: pointer;
+          margin-bottom: 15px;
+        }
+        .sign-in_btn:hover {
+          background-color: #3b7fd6;
+        }
+        .secondary_btn {
+          background-color: #eee;
+          color: #333;
+        }
+      `}</style>
     </div>
   );
 };

@@ -13,7 +13,7 @@
     "canvas-confetti": "^1.9.3",
     "dotenv": "^16.5.0",
     "flowbite": "^3.1.2",
-    "framer-motion": "^12.10.5",
+    "framer-motion": "^12.14.0",
     "pdfjs-dist": "^3.4.120",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

@@ -6,13 +6,14 @@ import PrivateRoute from './components/PrivateRoute.jsx'
 import Register from '../pages/Register.jsx';
 import TakeQuiz from '../pages/TakeQuiz.jsx'
 import Home from '../pages/Home.jsx'
+import LandingPage from '../pages/LandingPage.jsx'
 
 
 function App() {
   return (
    <BrowserRouter>
     <Routes>
-      <Route path="/" element={<Home />} />
+      <Route path="/" element={<LandingPage />} />
       <Route path="/register" element={<Register />} />
       <Route path="/login" element={<Login />} />
       <Route path="/take-quiz" element={<PrivateRoute><TakeQuiz /></PrivateRoute>} />
