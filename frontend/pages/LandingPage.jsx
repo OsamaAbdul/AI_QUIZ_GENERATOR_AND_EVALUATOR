@@ -6,7 +6,7 @@ function LandingPage() {
   return (
     <div className="gradient-bg min-h-screen pt-16 md:pt-20">
       {/* Navbar */}
-      <nav className="fixed top-0 w-full bg-darkBg/80 backdrop-blur-sm z-10">
+      <nav className="fixed top-0 w-full bg-darkBg/80 backdrop-blur-sm z-10 ">
         <div className="flex justify-between items-center px-4 py-4 md:px-8">
         <div className="flex items-center space-x-5 md:space-x-10 text-sm md:text-base">
           <img

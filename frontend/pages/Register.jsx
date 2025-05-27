@@ -9,8 +9,7 @@ import { toast } from 'react-toastify';
 const Register = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false); // Added for password toggle
-  const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
@@ -19,11 +18,10 @@ const Register = () => {
     e.preventDefault();
 
     if (!email.trim() || !password.trim()) {
-      setError('Please fill in both fields');
+      toast.error('Please fill in both fields');
       return;
     }
 
-    setError('');
     setLoading(true);
 
     try {
@@ -44,9 +42,9 @@ const Register = () => {
 
       if (response.ok) {
         toast.success('Registration successful! You can now log in.');
-        navigate('/');
+        navigate('/login');
       } else {
-        setError(result.error || 'Something went wrong');
+        toast.error(result.error || 'Something went wrong');
       }
     } catch (err) {
       setLoading(false);
@@ -63,12 +61,6 @@ const Register = () => {
             Get started with our app, just create an account and enjoy the experience.
           </span>
         </div>
-
-        {error && (
-          <p className="text-red-600 bg-red-100 border border-red-300 px-4 py-2 rounded-md font-semibold mt-4">
-            ⚠️ {error}
-          </p>
-        )}
 
         <div className="input_container icon_input">
           <label className="input_label" htmlFor="email_field">Email</label>
@@ -118,7 +110,7 @@ const Register = () => {
         <button
           type="button"
           className="sign-in_btn secondary_btn"
-          onClick={() => navigate('/')}
+          onClick={() => navigate('/login')}
         >
           Log In
         </button>
@@ -150,14 +142,16 @@ const Register = () => {
         .title_container {
           text-align: center;
           margin-bottom: 20px;
+          color: black;
         }
         .title {
           font-size: 1.5rem;
           font-weight: bold;
+          color: black;
         }
         .subtitle {
           font-size: 0.9rem;
-          color: #777;
+          color: black;
         }
         .input_container {
           margin-bottom: 15px;
@@ -166,6 +160,7 @@ const Register = () => {
           font-size: 0.9rem;
           display: block;
           margin-bottom: 5px;
+          color: black;
         }
         .input_with_icon {
           position: relative;
@@ -210,6 +205,10 @@ const Register = () => {
         .secondary_btn {
           background-color: #eee;
           color: #333;
+        }
+        
+        p {
+         color: black;
         }
       `}</style>
     </div>

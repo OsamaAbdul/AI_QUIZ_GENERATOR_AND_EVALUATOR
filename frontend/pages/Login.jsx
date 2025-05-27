@@ -8,27 +8,24 @@ import { FaSpinner, FaFacebookF } from 'react-icons/fa';
 import { FcGoogle } from 'react-icons/fc';
 import { useUser } from '../src/UseContext.jsx';
 
-
 const Login = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
   const { setUser } = useUser();
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    setError('');
-  
+
     if (!email.trim() || !password.trim()) {
-      setError('Please enter both email and password.');
+      toast.error('Please enter both email and password.');
       return;
     }
-  
+
     setLoading(true);
-  
+
     try {
       const apiUrl = import.meta.env.VITE_API_URL;
       const response = await fetch(`${apiUrl}/api/user/login`, {
@@ -36,33 +33,27 @@ const Login = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       });
-  
+
       const data = await response.json();
       console.log('Login response:', data);
-  
+
       if (!response.ok) {
-        // Handle error: backend sends error message in 'error'
-        setError(data.error || 'Something went wrong. Please try again.');
+        toast.error(data.error || 'Something went wrong. Please try again.');
         return;
       }
-  
+
       if (!data.token) {
-        // Handle case where no token is returned
-        setError('No token received!');
+        toast.error('No token received!');
         return;
       }
-  
-      // Store the received token in localStorage
+
       localStorage.setItem('token', data.token);
       setUser(data.user);
       console.log('Logged in email:', data.user?.email);
-      console.log('Logged in email:', data.user);
+      console.log('Logged in user:', data.user);
       toast.success('Login successful!', data.user?.email);
-  
-      // Optionally, you can also store user details in localStorage if needed
+
       localStorage.setItem('user', JSON.stringify(data.user));
-  
-      // Navigate to the next page (e.g., dashboard or another protected route)
       navigate('/upload-pdf');
     } catch (err) {
       console.error('Login error:', err);
@@ -71,22 +62,15 @@ const Login = () => {
       setLoading(false);
     }
   };
-  
 
   return (
     <div className="wrapper">
       <form className="form_container" onSubmit={handleLogin}>
         <div className="title_container">
+          <p>OsAI Quiz Master</p>
           <p className="title">Login to your Account</p>
           <span className="subtitle">Enter your credentials to continue</span>
         </div>
-
-              {error && (
-          <p className="text-red-600 bg-red-100 text-white border border-red-300 px-4 py-2 rounded-md font-semibold mt-4">
-            ⚠️ {error}
-          </p>
-        )}
-
 
         <div className="input_container icon_input">
           <label className="input_label" htmlFor="email">Email</label>
@@ -132,21 +116,7 @@ const Login = () => {
           </center>
         </button>
 
-        {/* <div className="separator">
-          <hr className="line" />
-          <span>OR</span>
-          <hr className="line" />
-        </div> */}
-
-        {/* <div className="social_buttons">
-          <button type="button" className="social_btn google_btn">
-            <FcGoogle size={20} /> Continue with Google
-          </button>
-          <button type="button" className="social_btn fb_btn">
-            <FaFacebookF size={18} /> Continue with Facebook
-          </button>
-        </div> */}
-        <p>You do not have an accoount?</p>
+        <p className='text-black-200'>You do not have an account?</p>
         <button
           type="button"
           className="sign-in_btn secondary_btn"
@@ -182,14 +152,16 @@ const Login = () => {
         .title_container {
           text-align: center;
           margin-bottom: 20px;
+          color: black;
         }
         .title {
           font-size: 1.5rem;
           font-weight: bold;
+          color: black;
         }
         .subtitle {
           font-size: 0.9rem;
-          color: #777;
+          color: #000;
         }
         .input_container {
           margin-bottom: 15px;
@@ -198,6 +170,7 @@ const Login = () => {
           font-size: 0.9rem;
           display: block;
           margin-bottom: 5px;
+          color: black;
         }
         .input_with_icon {
           position: relative;
@@ -223,7 +196,7 @@ const Login = () => {
           border: 1px solid #ccc;
           border-radius: 6px;
           outline: none;
-          color: white;
+          color: black;
         }
         .sign-in_btn {
           width: 100%;
@@ -242,15 +215,6 @@ const Login = () => {
         .secondary_btn {
           background-color: #eee;
           color: #333;
-        }
-        .error_msg {
-          color: #e74c3c;
-          background: #fdecea;
-          padding: 10px;
-          border-radius: 5px;
-          font-size: 0.9rem;
-          margin-bottom: 10px;
-          text-align: center;
         }
         .separator {
           display: flex;
@@ -290,6 +254,9 @@ const Login = () => {
         }
         .fb_btn:hover {
           background: #145dbf;
+        }
+        p {
+          color: black;
         }
       `}</style>
     </div>
