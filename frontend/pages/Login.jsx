@@ -82,7 +82,7 @@ const Login = () => {
         </div>
 
               {error && (
-          <p className="text-red-600 bg-red-100 border border-red-300 px-4 py-2 rounded-md font-semibold mt-4">
+          <p className="text-red-600 bg-red-100 text-white border border-red-300 px-4 py-2 rounded-md font-semibold mt-4">
             ⚠️ {error}
           </p>
         )}
@@ -223,6 +223,7 @@ const Login = () => {
           border: 1px solid #ccc;
           border-radius: 6px;
           outline: none;
+          color: white;
         }
         .sign-in_btn {
           width: 100%;

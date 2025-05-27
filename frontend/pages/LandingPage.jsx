@@ -1,15 +1,23 @@
 import { Link } from 'react-router-dom';
 import FeaturesSection from '../src/components/FeaturesSection';
 
+
 function LandingPage() {
   return (
     <div className="gradient-bg min-h-screen pt-16 md:pt-20">
       {/* Navbar */}
       <nav className="fixed top-0 w-full bg-darkBg/80 backdrop-blur-sm z-10">
         <div className="flex justify-between items-center px-4 py-4 md:px-8">
-          <div className="space-x-4 md:space-x-6 text-sm md:text-base">
-            <a href="/" className="text-gray-400 hover:text-white">AI QUIZ GENERATOR & EVALUATOR</a>
-          </div>
+        <div className="flex items-center space-x-5 md:space-x-10 text-sm md:text-base">
+          <img
+            src="/OsAI-master.jpg"
+            alt="OsAI QuizMaster Logo"
+            className="w-8 h-10 md:w-10 md:h-15 rounded-full object-contain"
+          />
+          <a href="/" className="text-gray-400 hover:text-white" aria-label="OsAI QuizMaster Home">
+            OsAI QuizMaster
+          </a>
+        </div>
           <Link to="/register" className="btn-primary">Get Started</Link>
         </div>
       </nav>
@@ -17,7 +25,7 @@ function LandingPage() {
       {/* Hero Section */}
       <section className="flex flex-col items-center justify-center min-h-screen px-4 pt-20 text-center">
         <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 leading-tight">
-          Welcome to AI Quiz Generator <br className="hidden sm:block" /> & Evaluator
+          Welcome to OsAI  <br className="hidden sm:block" /> QuizMaster
         </h1>
         <p className="text-base sm:text-lg md:text-xl max-w-xl md:max-w-2xl mb-8 leading-relaxed text-gray-300">
           Transform learning into an interactive and personalized experience powered by state-of-the-art AI APIs. Upload your PDFs, auto-generate quizzes, evaluate answers in real-time, and get smarter feedback instantly. <br className="hidden sm:block" />
@@ -52,7 +60,7 @@ function LandingPage() {
 
       {/* Footer */}
       <footer className="py-8 px-4 text-center text-gray-400 text-sm md:text-base">
-        <p>© 2025 AI Quiz Generator & Evaluator. Developed By Osama Abdullahi</p>
+        <p>© {new Date().getFullYear()} OsAI QuizMaster. Developed By Osama Abdul</p>
       </footer>
     </div>
   );
