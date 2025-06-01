@@ -3,11 +3,15 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import routes from './routes/routes.js';
 import dotenv from 'dotenv';
+import job from './config/cron.js'
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+// only if in production mode
+if(process.env.NODE_ENV ==="production") job.start();
 
 // ✅ Define allowed origins without trailing slashes
 const allowedOrigins = [
@@ -47,6 +51,12 @@ mongoose.connect(process.env.MONGODB_URI)
 
 // ✅ Routes
 app.use('/api/user', routes);
+
+// Route to check server
+
+app.get('/server-check', (req, res) => {
+    res.status(200).json({ message: "Server up and running.........."})
+})
 
 // ✅ Start server
 app.listen(PORT, () => {
